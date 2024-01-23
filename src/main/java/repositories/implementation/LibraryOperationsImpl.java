@@ -1,3 +1,7 @@
+/**
+ * @autor Анастасия Гапонова
+ * @version 1.0
+ */
 package repositories.implementation;
 
 
@@ -17,16 +21,32 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 
-public class LibraryOperationsImpl implements CrudRepository {
-    private JdbcTemplate jdbcTemplate;
-    private Logger logger = LoggerFactory.getLogger(LibraryOperationsImpl.class);
+/**
+ * Реализация интерфейса CrudRepository для работы с книгами в базе данных.
+ *
+ * Предоставляет методы для создания, чтения, обновления и удаления книг.
+ */
+public class LibraryOperationsImpl implements CrudRepository<Book> {
+    private final JdbcTemplate jdbcTemplate;
+    private final Logger logger = LoggerFactory.getLogger(LibraryOperationsImpl.class);
 
+    /**
+     * Конструктор класса LibraryOperationsImpl.
+     *
+     * @param jdbcTemplate объект JdbcTemplate для выполнения SQL-запросов.
+     */
     public LibraryOperationsImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         initTables();
 
     }
 
+    /**
+     * Удаляет книгу из базы данных по ее ID.
+     *
+     * @see CrudRepository#delete(Long)
+     * @param id ID книги.
+     */
     @Override
     public void delete(Long id) {
         String query = "DELETE FROM book WHERE id = ?";
@@ -37,6 +57,12 @@ public class LibraryOperationsImpl implements CrudRepository {
 
     }
 
+    /**
+     * Находит все книги в базе данных.
+     *
+     * @see CrudRepository#findAll()
+     * @return список всех книг.
+     */
     @Override
     public List<?> findAll() {
         String query = "SELECT * FROM book";
@@ -54,6 +80,13 @@ public class LibraryOperationsImpl implements CrudRepository {
         return books;
     }
 
+
+    /**
+     * Обновляет информацию о книге в базе данных.
+     *
+     * @see CrudRepository#update(Object) 
+     * @param entity обновленная информация о книге.
+     */
     @Override
     public void update(Object entity) {
         if (entity.getClass().equals(Book.class)) {
@@ -69,6 +102,14 @@ public class LibraryOperationsImpl implements CrudRepository {
         }
     }
 
+
+    /**
+     * Находит книгу в базе данных по ее ID.
+     *
+     * @param id ID книги.
+     * @see CrudRepository#findById(Long)           
+     * @return книгу, если она найдена, или пустой Optional, если книга не найдена.
+     */
     @Override
     public Optional findById(Long id) {
         String query = "SELECT * FROM book WHERE id = ?";
@@ -82,6 +123,13 @@ public class LibraryOperationsImpl implements CrudRepository {
         return Optional.empty();
     }
 
+
+    /**
+     * Сохраняет новую книгу в базе данных.
+     *
+     * @see CrudRepository#save(Object) 
+     * @param entity новая книга.
+     */
     @Override
     public void save(Object entity) {
         if (entity.getClass().equals(Book.class)) {
@@ -98,6 +146,14 @@ public class LibraryOperationsImpl implements CrudRepository {
         } else logger.error("The update operation hasn't executed");
     }
 
+
+    /**
+     * Получает столбцы для таблицы на основе полей указанного объекта.
+     *
+     * @param entity объект.
+     * @param stringPart строка, которая будет добавлена после каждого столбца.
+     * @return строку, содержащую столбцы для таблицы.
+     */
     private StringBuilder getColumns(Object entity, String stringPart) {
         StringBuilder columns = new StringBuilder();
         for (Field field : entity.getClass().getDeclaredFields()) {
@@ -109,6 +165,9 @@ public class LibraryOperationsImpl implements CrudRepository {
         return columns;
     }
 
+    /**
+     * Инициализирует таблицы в базе данных.
+     */
     private void initTables() {
         DataBaseInitializing initializer = new DataBaseInitializing(this.jdbcTemplate);
         initializer.createTables();
