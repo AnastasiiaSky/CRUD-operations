@@ -18,7 +18,7 @@ public class DataBaseInitializing {
     protected void createTables() {
         Reflections reflections = new Reflections(PACKAGE, Scanners.SubTypes.filterResultsBy(s -> true));
         Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
-        if(!classes.isEmpty()) {
+        if (!classes.isEmpty()) {
             for (Class<?> aClass : classes) {
                 creatingCurrentTables(aClass);
             }
@@ -26,11 +26,21 @@ public class DataBaseInitializing {
     }
 
     private void creatingCurrentTables(Class<?> clazz) {
-        this.jdbcTemplate.execute(String.format("DROP TABLE IF EXISTS %s  CASCADE",
-                clazz.getSimpleName()));
-        Field[] fields = clazz.getDeclaredFields();
-        this.jdbcTemplate.execute(String.format("CREATE TABLE %s (%s bigserial primary key," +
-                "%s text not null, %s text not null)", clazz.getSimpleName(), fields[0].getName(),
-                fields[1].getName(), fields[2].getName()));
+        String tableName = clazz.getSimpleName();
+        this.jdbcTemplate.execute(String.format("DROP TABLE IF EXISTS %s  CASCADE", tableName));
+        StringBuilder columns = getColumnsForTheTable(clazz);
+        String query = String.format("CREATE TABLE %s (id bigserial primary key, %s)", tableName, columns.toString());
+        this.jdbcTemplate.execute(query);
+    }
+
+    private StringBuilder getColumnsForTheTable(Class<?> clazz) {
+        StringBuilder columns = new StringBuilder();
+        for (Field field : clazz.getDeclaredFields()) {
+            if (!field.getName().equals("id")) {
+                columns.append(field.getName()).append(" text not null, ");
+            }
+        }
+        columns.deleteCharAt(columns.lastIndexOf(", "));
+        return columns;
     }
 }

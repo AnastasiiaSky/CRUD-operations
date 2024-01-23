@@ -1,5 +1,4 @@
 package models;
-
 import java.util.StringJoiner;
 
 public class Book {
@@ -8,7 +7,16 @@ public class Book {
     private String author;
 
 
+    public Book() {
+    }
+
     public Book(String bookName, String author) {
+        this.bookName = bookName;
+        this.author = author;
+    }
+
+    public Book(Long id, String bookName, String author) {
+        this.id = id;
         this.bookName = bookName;
         this.author = author;
     }
