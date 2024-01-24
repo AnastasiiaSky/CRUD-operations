@@ -4,6 +4,7 @@
  */
 
 package configuration;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,17 +13,28 @@ import repositories.implementation.LibraryOperationsImpl;
 
 /**
  * Класс конфигурации приложения.
- *
  */
 @Configuration
 @PropertySource("classpath:db.properties")
 public class ApplicationConfig {
+    /**
+     * Имя JDBC драйвера.
+     */
     @Value("${db.driver.name}")
     private String driverName;
+    /**
+     * URL базы данных.
+     */
     @Value("${db.url}")
     private String url;
+    /**
+     * Имя пользователя базы данных.
+     */
     @Value("${db.user}")
     private String username;
+    /**
+     * Пароль пользователя базы данных.
+     */
     @Value("${db.password}")
     private String password;
 
@@ -56,8 +68,8 @@ public class ApplicationConfig {
      * Создание бина LibraryOperationsImpl.
      *
      * @param jdbcTemplate бин JdbcTemplate
-     * @see ApplicationConfig#createJdbcTemplate()
      * @return новый экземпляр LibraryOperationsImpl.
+     * @see ApplicationConfig#createJdbcTemplate()
      */
     @Bean
     public LibraryOperationsImpl libraryOperationsImpl(JdbcTemplate jdbcTemplate) {

@@ -21,6 +21,7 @@ public interface CrudRepository<T> {
      * @param entity сущность для сохранения.
      */
     void save(Object entity);
+
     /**
      * Находит сущность по ее ID.
      *
@@ -35,12 +36,14 @@ public interface CrudRepository<T> {
      * @param entity обновленная сущность.
      */
     void update(Object entity);
+
     /**
      * Удаляет сущность из базы данных по ее ID.
      *
      * @param id ID сущности.
      */
     void delete(Long id);
+
     /**
      * Находит все сущности в базе данных.
      *

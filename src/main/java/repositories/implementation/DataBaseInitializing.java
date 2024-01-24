@@ -14,11 +14,17 @@ import java.util.Set;
 
 /**
  * Класс для инициализации базы данных.
- *
+ * <p>
  * Создает таблицы в базе данных на основе классов моделей в указанном пакете.
  */
 public class DataBaseInitializing {
+    /**
+     * package для поиска моделей
+     */
     private static final String PACKAGE = "models";
+    /**
+     * шаблон JdbcTemplate.
+     */
     private final JdbcTemplate jdbcTemplate;
 
     /**

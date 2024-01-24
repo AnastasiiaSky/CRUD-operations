@@ -6,7 +6,7 @@ package repositories.implementation;
 
 
 import models.Book;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,16 +19,18 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
+import static application.Program.logger;
 
 /**
  * Реализация интерфейса CrudRepository для работы с книгами в базе данных.
- *
+ * <p>
  * Предоставляет методы для создания, чтения, обновления и удаления книг.
  */
 public class LibraryOperationsImpl implements CrudRepository<Book> {
+    /**
+     * шаблон JdbcTemplate.
+     */
     private final JdbcTemplate jdbcTemplate;
-    private final Logger logger = LoggerFactory.getLogger(LibraryOperationsImpl.class);
 
     /**
      * Конструктор класса LibraryOperationsImpl.
@@ -44,8 +46,8 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
     /**
      * Удаляет книгу из базы данных по ее ID.
      *
-     * @see CrudRepository#delete(Long)
      * @param id ID книги.
+     * @see CrudRepository#delete(Long)
      */
     @Override
     public void delete(Long id) {
@@ -60,8 +62,8 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
     /**
      * Находит все книги в базе данных.
      *
-     * @see CrudRepository#findAll()
      * @return список всех книг.
+     * @see CrudRepository#findAll()
      */
     @Override
     public List<?> findAll() {
@@ -84,8 +86,8 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
     /**
      * Обновляет информацию о книге в базе данных.
      *
-     * @see CrudRepository#update(Object) 
      * @param entity обновленная информация о книге.
+     * @see CrudRepository#update(Object)
      */
     @Override
     public void update(Object entity) {
@@ -107,8 +109,8 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
      * Находит книгу в базе данных по ее ID.
      *
      * @param id ID книги.
-     * @see CrudRepository#findById(Long)           
      * @return книгу, если она найдена, или пустой Optional, если книга не найдена.
+     * @see CrudRepository#findById(Long)
      */
     @Override
     public Optional findById(Long id) {
@@ -118,7 +120,7 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
             logger.info("Found a book with id " + id);
             return Optional.ofNullable(book);
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
-            logger.error("No book found with id " + id);
+            logger.error("No book found with id = {}, id is incorrect" + id);
         }
         return Optional.empty();
     }
@@ -127,8 +129,8 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
     /**
      * Сохраняет новую книгу в базе данных.
      *
-     * @see CrudRepository#save(Object) 
      * @param entity новая книга.
+     * @see CrudRepository#save(Object)
      */
     @Override
     public void save(Object entity) {
@@ -150,7 +152,7 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
     /**
      * Получает столбцы для таблицы на основе полей указанного объекта.
      *
-     * @param entity объект.
+     * @param entity     объект.
      * @param stringPart строка, которая будет добавлена после каждого столбца.
      * @return строку, содержащую столбцы для таблицы.
      */

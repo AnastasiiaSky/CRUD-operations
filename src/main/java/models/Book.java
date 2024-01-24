@@ -10,12 +10,23 @@ import java.util.StringJoiner;
  * Класс модель - Book с полями <b>id</b>, <b>bookName</b> и <b>author</b>.
  */
 public class Book {
+    /**
+     * Идентификатор книги.
+     */
     private Long id;
+    /**
+     * Название книги.
+     */
     private String bookName;
+    /**
+     * Автор книги.
+     */
     private String author;
 
 
-    /** Дефолтный конструктор класса Book. */
+    /**
+     * Дефолтный конструктор класса Book.
+     */
     public Book() {
     }
 
@@ -23,7 +34,7 @@ public class Book {
      * Конструктор класса Book.
      *
      * @param bookName название книги
-     * @param author автор книги
+     * @param author   автор книги
      */
     public Book(String bookName, String author) {
         this.bookName = bookName;
@@ -33,9 +44,9 @@ public class Book {
     /**
      * Конструктор класса Book с указанием ID.
      *
-     * @param id уникальный идентификатор книги
+     * @param id       уникальный идентификатор книги
      * @param bookName название книги
-     * @param author автор книги
+     * @param author   автор книги
      */
     public Book(Long id, String bookName, String author) {
         this.id = id;
@@ -45,6 +56,7 @@ public class Book {
 
     /**
      * Getter для поля id
+     *
      * @return текущее значение id.
      */
     public Long getId() {
@@ -53,6 +65,7 @@ public class Book {
 
     /**
      * Setter для поля id.
+     *
      * @param id Новое значение для id.
      */
     public void setId(Long id) {
@@ -61,6 +74,7 @@ public class Book {
 
     /**
      * Getter для поля bookName.
+     *
      * @return текущее значение поля bookName.
      */
     public String getBookName() {
@@ -70,6 +84,7 @@ public class Book {
 
     /**
      * Setter  для поля bookName.
+     *
      * @param bookName Новое значение для bookName.
      */
     public void setBookName(String bookName) {
@@ -79,6 +94,7 @@ public class Book {
 
     /**
      * Getter для поля  author.
+     *
      * @return Tекущее значение поля author.
      */
     public String getAuthor() {
@@ -87,6 +103,7 @@ public class Book {
 
     /**
      * Setter для поля author.
+     *
      * @param author Новое значение для author.
      */
     public void setAuthor(String author) {
