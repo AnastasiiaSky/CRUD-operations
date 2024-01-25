@@ -1,14 +1,10 @@
-/**
- * @autor Анастасия Гапонова
- * @version 1.0
- */
 package application;
 
 import configuration.ApplicationConfig;
 import models.Book;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import repositories.implementation.LibraryOperationsImpl;
 
@@ -33,22 +29,51 @@ public class Program {
      * @param args аргументы командной строки (не используются в этом примере).
      */
     public static void main(String[] args) {
-
         logger.info("The application started working!");
+        try (AnnotationConfigApplicationContext context =
+                     new AnnotationConfigApplicationContext(ApplicationConfig.class)) {
+            LibraryOperationsImpl operations = context.getBean("libraryOperationsImpl", LibraryOperationsImpl.class);
+            logger.info("LibraryOperations bean was created");
 
-        ApplicationContext context =
-                new AnnotationConfigApplicationContext(ApplicationConfig.class);
-        LibraryOperationsImpl operations = context.getBean("libraryOperationsImpl", LibraryOperationsImpl.class);
-        logger.info("LibraryOperations bean was created");
+            addingDataTest(operations);
+            findByIdTest(operations);
+            updateTest(operations);
+            deleteTest(operations);
+            findAllTest(operations);
+            findByBookName(operations);
+            findByBookAuthor(operations);
+        } catch (Exception e) {
+            logger.error("Data Base connection has not created!");
+        }
 
-        addingDataTest(operations);
-        findByIdTest(operations);
-        updateTest(operations);
-        deleteTest(operations);
-        findAllTest(operations);
+        logger.info("The application end working!");
+    }
+
+
+    /**
+     * Метод для тестирования поиска книги по названию книги.
+     *
+     * @param operations Объект класса LibraryOperationsImpl.
+     */
+    private static void findByBookName(LibraryOperationsImpl operations) {
+        Optional<Book> book = operations.findByBookName("Война и мир");
+        logger.info(book.toString());
+        Optional<Book> book1 = operations.findByBookName("Руслан и Людмила");
+        logger.info(book1.toString());
 
     }
 
+    /**
+     * Метод для тестирования поиска книги по имени автора.
+     *
+     * @param operations Объект класса LibraryOperationsImpl.
+     */
+    private static void findByBookAuthor(LibraryOperationsImpl operations) {
+        List<Book> book = operations.findByAuthor("Ф.М. Достоевский");
+        logger.info(book.toString());
+        List<Book> book1 = operations.findByAuthor("И.И. Иванов");
+        logger.info(book1.toString());
+    }
 
     /**
      * Метод для добавления тестовых данных.
@@ -71,8 +96,11 @@ public class Program {
      */
     private static void findByIdTest(LibraryOperationsImpl operations) {
         Optional<Object> book = operations.findById(3L);
+        logger.info(book.toString());
         Optional<Object> book1 = operations.findById(510L);
+        logger.info(book1.toString());
         Optional<Object> book2 = operations.findById(-1L);
+        logger.info(book2.toString());
     }
 
     /**
@@ -105,5 +133,6 @@ public class Program {
      */
     private static void findAllTest(LibraryOperationsImpl operations) {
         List<?> books = operations.findAll();
+        logger.info(books.toString());
     }
 }

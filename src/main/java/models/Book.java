@@ -1,7 +1,3 @@
-/**
- * @autor Анастасия Гапонова
- * @version 1.0
- */
 package models;
 
 import java.util.StringJoiner;

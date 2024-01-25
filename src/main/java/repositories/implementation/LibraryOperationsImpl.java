@@ -4,14 +4,12 @@
  */
 package repositories.implementation;
 
-
-import models.Book;
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import repositories.interfaces.CrudRepository;
+import repositories.interfaces.BookRepository;
+import models.Book;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
@@ -22,11 +20,10 @@ import java.util.Optional;
 import static application.Program.logger;
 
 /**
- * Реализация интерфейса CrudRepository для работы с книгами в базе данных.
- * <p>
+ * Реализация интерфейса BookRepository расширяющего CrudRepository для работы с книгами в базе данных.
  * Предоставляет методы для создания, чтения, обновления и удаления книг.
  */
-public class LibraryOperationsImpl implements CrudRepository<Book> {
+public class LibraryOperationsImpl implements BookRepository {
     /**
      * шаблон JdbcTemplate.
      */
@@ -44,17 +41,60 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
     }
 
     /**
+     * Поиск книги в базе данных по ее автору.
+     *
+     * @param author - автор книги.
+     */
+    @Override
+    public List<Book> findByAuthor(String author) {
+        String query = "SELECT * FROM book WHERE author = ?";
+        List<Book> books = jdbcTemplate.query(query, new Object[]{author}, new BeanPropertyRowMapper<>(Book.class) {
+            @Override
+            public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Book entity = new Book();
+                entity.setId(rs.getLong("id"));
+                entity.setBookName(rs.getString("bookName"));
+                entity.setAuthor(rs.getString("author"));
+                return entity;
+            }
+        });
+        if (books.isEmpty()) {
+            logger.info("No books written by this author - {}", author);
+        } else {
+            logger.info("The list of books written by - {} was presented", author);
+        }
+        return books;
+    }
+
+    /**
+     * Поиск книги в базе данных по ее названию.
+     *
+     * @param bookName - название книги.
+     */
+    @Override
+    public Optional<Book> findByBookName(String bookName) {
+        String query = "SELECT * FROM book WHERE bookName = ?";
+        try {
+            Book book = jdbcTemplate.queryForObject(query, new Object[]{bookName}, new BeanPropertyRowMapper<>(Book.class));
+            logger.info("Found a book with name - {}", bookName);
+            return Optional.ofNullable(book);
+        } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
+            logger.error("No book found with name - {}", bookName);
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Удаляет книгу из базы данных по ее ID.
      *
      * @param id ID книги.
-     * @see CrudRepository#delete(Long)
      */
     @Override
     public void delete(Long id) {
         String query = "DELETE FROM book WHERE id = ?";
         int result = this.jdbcTemplate.update(query, id);
         if (result == 1) {
-            logger.info("The delete operation was executed");
+            logger.info("Book with id - {} was deleted", id);
         } else logger.error("The delete operation hasn't executed, this id = {} is incorrect", id);
 
     }
@@ -63,7 +103,6 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
      * Находит все книги в базе данных.
      *
      * @return список всех книг.
-     * @see CrudRepository#findAll()
      */
     @Override
     public List<?> findAll() {
@@ -87,7 +126,6 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
      * Обновляет информацию о книге в базе данных.
      *
      * @param entity обновленная информация о книге.
-     * @see CrudRepository#update(Object)
      */
     @Override
     public void update(Object entity) {
@@ -99,7 +137,7 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
             int result = this.jdbcTemplate.update(query, currentBook.getBookName(),
                     currentBook.getAuthor(), currentBook.getId());
             if (result == 1) {
-                logger.info("The update operation was executed");
+                logger.info("The update operation on book with id = {} was executed", currentBook.getId());
             } else logger.error("The update operation hasn't executed, id = {} is incorrect!", ((Book) entity).getId());
         }
     }
@@ -110,17 +148,16 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
      *
      * @param id ID книги.
      * @return книгу, если она найдена, или пустой Optional, если книга не найдена.
-     * @see CrudRepository#findById(Long)
      */
     @Override
     public Optional findById(Long id) {
         String query = "SELECT * FROM book WHERE id = ?";
         try {
             Book book = jdbcTemplate.queryForObject(query, new Object[]{id}, new BeanPropertyRowMapper<>(Book.class));
-            logger.info("Found a book with id " + id);
+            logger.info("Found a book with id {} ", id);
             return Optional.ofNullable(book);
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
-            logger.error("No book found with id = {}, id is incorrect" + id);
+            logger.error("No book found with id = {}, id is incorrect", id);
         }
         return Optional.empty();
     }
@@ -130,7 +167,6 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
      * Сохраняет новую книгу в базе данных.
      *
      * @param entity новая книга.
-     * @see CrudRepository#save(Object)
      */
     @Override
     public void save(Object entity) {
@@ -144,7 +180,7 @@ public class LibraryOperationsImpl implements CrudRepository<Book> {
                 String idQuery = String.format("SELECT MAX(id) FROM %s", tableName);
                 long id = this.jdbcTemplate.queryForObject(idQuery, Long.class);
                 currentBook.setId(id);
-            } else logger.error("The update operation hasn't executed");
+            } else logger.error("The update operation hasn't executed, object was added to Data Base");
         } else logger.error("The update operation hasn't executed");
     }
 
